@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./mini_python  # 백엔드 디렉토리로 경로를 설정하세요.
+      dockerfile: Dockerfile
+    env_file:
+      - ./mini_python/.env  # 백엔드 환경 변수 파일 경로
+    ports:
+      - "8000:80"  # 백엔드 컨테이너의 포트를 외부에 노출
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./mini_react_front  # 프론트엔드 디렉토리로 경로를 설정하세요.
+      dockerfile: Dockerfile
+    env_file:
+      - ./mini_react_front/.env  # 프론트엔드 환경 변수 파일 경로
+    ports:
+      - "3000:80"  # 프론트엔드 컨테이너의 포트를 외부에 노출
+    depends_on:
+      - backend  # 백엔드가 먼저 실행되도록 설정
+    networks:
+      - app-network
+    extra_hosts:
+    - "backend:host-gateway"
+
+networks:
+  app-network:
+    driver: bridge
